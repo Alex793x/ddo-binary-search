@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { CompareWord } from "@/utility/Compare";
 import BinarySearch from "@/utility/BinarySearch";
 
+
 type props = {
     globalArrayOfWords: Word[]
 }
@@ -26,8 +27,26 @@ export const Search = ({globalArrayOfWords}: props) => {
 
     const handleSearch = async () => {
         console.log(searchWord)
+    
+        // Measure performance of BinarySearch
+        performance.mark("startBinarySearch")
         BinarySearch(searchWord, wordsArray, CompareWord, 0, globalArrayOfWords.length - 1)
-        console.log(globalArrayOfWords.find(wordObj => wordObj.variant === "heste"));
+        performance.mark("endBinarySearch")
+        performance.measure("BinarySearch", "startBinarySearch", "endBinarySearch")
+    
+        // Measure performance of find method
+        performance.mark("startFind")
+        const foundWord = globalArrayOfWords.find(wordObj => wordObj.variant === searchWord)
+        performance.mark("endFind")
+        performance.measure("Find", "startFind", "endFind")
+    
+        // Log measurements
+        const measurements = performance.getEntriesByType("measure");
+        for (const measurement of measurements) {
+            console.log(measurement.name, measurement.duration);
+        }
+    
+        console.log(foundWord);
     };
 
     return (
